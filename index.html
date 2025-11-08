@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zig Dev - Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4ade80;
+            --secondary-color: #60a5fa;
+            --dark-bg: #0f172a;
+            --dark-surface: #1e293b;
+            --dark-text: #e2e8f0;
+            --light-bg: #f0fdf4;
+            --light-surface: #ffffff;
+            --light-text: #0f172a;
+            --accent-color: #38bdf8;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            transition: var(--transition);
+            line-height: 1.6;
+        }
+
+        body.light-mode {
+            background-color: var(--light-bg);
+            color: var(--light-text);
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark-bg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: var(--dark-bg);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--dark-bg);
+            transition: var(--transition);
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--dark-bg);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--dark-bg);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 250px;
+            height: calc(100vh - 70px);
+            background: var(--dark-surface);
+            padding: 2rem 1rem;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: var(--transition);
+            z-index: 999;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .sidebar {
+            background: var(--light-surface);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-nav a {
+            color: var(--dark-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        body.light-mode .sidebar-nav a {
+            color: var(--light-text);
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(74, 222, 128, 0.2);
+            padding-left: 1.5rem;
+        }
+
+        .sidebar-nav i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-section {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .sidebar-section-title {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .coming-soon {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Main Content */
+        main {
+            margin-left: 0;
+            padding: 100px 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* About Section */
+        .about-section {
+            background: var(--dark-surface);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        body.light-mode .about-section {
+            background: var(--light-surface);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .profile-title {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-item i {
+            margin-right: 10px;
+            color: var(--primary-color);
+            width: 20px;
+        }
+
+        .info-item a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .info-item a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* Projects Section */
+        .projects-section {
+            background: var(--dark-surface);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        body.light-mode .projects-section {
+            background: var(--light-surface);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: var(--dark-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        body.light-mode .project-card {
+            background: var(--light-bg);
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .project-description {
+            margin-bottom: 1rem;
+            color: var(--dark-text);
+        }
+
+        body.light-mode .project-description {
+            color: var(--light-text);
+        }
+
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .project-link:hover {
+            color: var(--secondary-color);
+        }
+
+        .project-link i {
+            margin-left: 5px;
+        }
+
+        /* Coming Soon Section */
+        .coming-soon-section {
+            background: var(--dark-surface);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        body.light-mode .coming-soon-section {
+            background: var(--light-surface);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .coming-soon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .coming-soon-card {
+            background: var(--dark-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            border: 2px dashed var(--primary-color);
+            opacity: 0.8;
+        }
+
+        body.light-mode .coming-soon-card {
+            background: var(--light-bg);
+        }
+
+        .coming-soon-card:hover {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+
+        .coming-soon-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .coming-soon-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .coming-soon-card p {
+            color: var(--dark-text);
+            font-size: 0.9rem;
+        }
+
+        body.light-mode .coming-soon-card p {
+            color: var(--light-text);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-surface);
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        body.light-mode footer {
+            background: var(--light-surface);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            transform: scale(1.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .profile-info {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .coming-soon-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-code"></i>
+                Zig Dev
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#about">About Me</a></li>
+                <li><a href="#projects">List Project</a></li>
+                <li><a href="#coming-soon">Coming Soon</a></li>
+                <li>
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+            </ul>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <ul class="sidebar-nav">
+            <li><a href="#about"><i class="fas fa-user"></i> About Me</a></li>
+            <li><a href="#projects"><i class="fas fa-project-diagram"></i> List Project</a></li>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Coming Soon</div>
+                <li><a href="#" class="coming-soon"><i class="fas fa-book"></i> Zig Guide</a></li>
+                <li><a href="#" class="coming-soon"><i class="fas fa-shield-alt"></i> Hacking Guide</a></li>
+                <li><a href="#" class="coming-soon"><i class="fas fa-comments"></i> Forum</a></li>
+            </div>
+        </ul>
+    </aside>
+
+    <main>
+        <section id="about" class="about-section">
+            <div class="profile-container">
+                <img src="https://picsum.photos/seed/zigdev/150/150.jpg" alt="Zig Dev" class="profile-img">
+                <h1 class="profile-name">Zig Dev</h1>
+                <p class="profile-title">Hacker & Developer</p>
+            </div>
+            
+            <div class="profile-info">
+                <div class="info-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Alumni <a href="https://maps.app.goo.gl/6mx2N8N7tTPv2cPd6" target="_blank">Darussa'adah Cot Tarom</a></span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-school"></i>
+                    <span>Siswa <a href="https://maps.app.goo.gl/Jqn61EQe4vL1wGSY8" target="_blank">SMKN 5 Takengon</a></span>
+                </div>
+                <div class="info-item">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub: <a href="https://github.com/gh0st4n/" target="_blank">Gh0sT4n</a></span>
+                </div>
+                <div class="info-item">
+                    <i class="fab fa-discord"></i>
+                    <span>Discord: <a href="https://discord.gg/9tpPAQnR" target="_blank">Gh0sT4n</a></span>
+                </div>
+                <div class="info-item">
+                    <i class="fab fa-youtube"></i>
+                    <span>YouTube: <a href="https://www.youtube.com/@DarSk3" target="_blank">Gh0sT4n</a></span>
+                </div>
+                <div class="info-item">
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram: <a href="https://www.instagram.com/zig_vr0g" target="_blank">Zig Vr0g</a></span>
+                </div>
+                <div class="info-item">
+                    <i class="fab fa-linkedin"></i>
+                    <span>LinkedIn: <a href="#" target="_blank">#</a></span>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="projects-section">
+            <h2 class="section-title">List Project</h2>
+            
+            <h3 style="color: var(--secondary-color); margin: 1.5rem 0 1rem;">Project Utama</h3>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3 class="project-title">T4n OS</h3>
+                    <p class="project-description">Sistem operasi berbasis Void Linux yang dikustomisasi dengan berbagai peningkatan dan fitur tambahan.</p>
+                    <a href="https://github.com/gh0st4n/T4n-OS" target="_blank" class="project-link">
+                        Lihat Proyek <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                <div class="project-card">
+                    <h3 class="project-title">VUR (Void User Repo)</h3>
+                    <p class="project-description">Repository pengguna untuk Void Linux yang menyediakan paket-paket tambahan yang tidak tersedia di repository resmi.</p>
+                    <a href="https://github.com/gh0st4n/T4n-Manpy" target="_blank" class="project-link">
+                        Lihat Proyek <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                <div class="project-card">
+                    <h3 class="project-title">VUR-Helper</h3>
+                    <p class="project-description">Alat bantu yang ditulis dengan Python untuk memudahkan penggunaan dan manajemen VUR (Void User Repo).</p>
+                    <a href="https://github.com/gh0st4n/VUR" target="_blank" class="project-link">
+                        Lihat Proyek <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+
+            <h3 style="color: var(--secondary-color); margin: 2rem 0 1rem;">Side Project</h3>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3 class="project-title">WalaweWM</h3>
+                    <p class="project-description">Window Manager untuk Wayland yang ditulis dengan bahasa Zig (dalam pengembangan).</p>
+                </div>
+                <div class="project-card">
+                    <h3 class="project-title">Shell</h3>
+                    <p class="project-description">Shell command line yang ditulis dengan bahasa Zig (dalam pengembangan).</p>
+                </div>
+                <div class="project-card">
+                    <h3 class="project-title">Ecosystem T4n OS</h3>
+                    <p class="project-description">Ekosistem lengkap untuk T4n OS yang mencakup berbagai aplikasi dan utilitas (dalam perencanaan).</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="coming-soon" class="coming-soon-section">
+            <h2 class="section-title">Coming Soon</h2>
+            <div class="coming-soon-grid">
+                <div class="coming-soon-card">
+                    <i class="fas fa-book"></i>
+                    <h3>Zig Guide</h3>
+                    <p>Panduan lengkap untuk mempelajari bahasa pemrograman Zig dari dasar hingga mahir.</p>
+                </div>
+                <div class="coming-soon-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Hacking Guide</h3>
+                    <p>Tutorial dan panduan ethical hacking untuk keamanan siber dan penetration testing.</p>
+                </div>
+                <div class="coming-soon-card">
+                    <i class="fas fa-comments"></i>
+                    <h3>Forum</h3>
+                    <p>Komunitas diskusi untuk berbagi pengetahuan, bertanya, dan berkolaborasi dengan developer lain.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/gh0st4n/" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://discord.gg/9tpPAQnR" target="_blank"><i class="fab fa-discord"></i></a>
+            <a href="https://www.youtube.com/@DarSk3" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/zig_vr0g" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p>&copy; 2025 Zig Dev. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+
+        // Check for saved theme preference or default to dark mode
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            body.classList.add('light-mode');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'light');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        mobileMenuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                !mobileMenuToggle.contains(e.target) && 
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Close sidebar on mobile after clicking a link
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('active');
+                    }
+                }
+            });
+        });
+
+        // Add animation to elements when they come into view
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = 0;
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(section);
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
